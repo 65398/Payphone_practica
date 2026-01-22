@@ -1,23 +1,20 @@
-# Imagen base de Node.js
-FROM node:18-alpine
+# Imagen base con Node.js
+FROM node:25
 
-# Crear directorio de trabajo
+# Directorio de trabajo dentro del contenedor
 WORKDIR /usr/src/app
 
-# Copiar archivos de configuración
+# Copiar archivos de dependencias primero (mejores builds)
 COPY package*.json ./
 
 # Instalar dependencias
 RUN npm install
 
-# Copiar el resto del proyecto
+# Copiar el resto del código
 COPY . .
 
-# Instalar http-server para servir los archivos HTML/JS
-RUN npm install -g http-server
-
-# Exponer el puerto
+# Exponer el puerto que usa la app
 EXPOSE 3000
 
-# Comando para iniciar el servidor
-CMD ["http-server", "-p", "3000"]
+# Comando para iniciar la aplicación
+CMD ["node", "index.js"]
