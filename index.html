@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Catálogo de Productos</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.payphonetodoesposible.com/box/v1.1/payphone-payment-box.css"
+    />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container">
+        <div class="brand">
+          <span class="brand-icon" aria-hidden="true">🏪</span>
+          <span class="brand-name">Tienda ULEAM</span>
+        </div>
+        <div class="nav-actions">
+          <span class="cart-badge" id="cart-count">0</span>
+          <span class="nav-cart" aria-label="Carrito">🛒</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="hero">
+      <h1>
+        <span class="store-mark" aria-hidden="true">🛍️</span> Catálogo de
+        Productos
+      </h1>
+      <p class="subtitle">Integración con PayPhone - Práctica ULEAM</p>
+      <div class="info-banner">
+        <span class="dot" aria-hidden="true"></span>
+        <strong>Modo Prueba Activado</strong>
+        <span class="muted">
+          - Usa cualquier número de teléfono para simular pagos</span
+        >
+      </div>
+    </section>
+
+    <main>
+      <div id="product-list" class="product-container"></div>
+
+      <div class="cart-container">
+        <h2>🛒 Carrito</h2>
+        <ul id="cart" class="cart-list"></ul>
+
+        <div id="cart-total-container">
+          <p>Total: $<span id="cart-total">0.00</span></p>
+        </div>
+
+        <!-- Botón para iniciar el pago manual -->
+        <button id="pay-button" class="pay-button">Pagar Todo</button>
+
+        <!-- Contenedor para la cajita de pago PayPhone -->
+        <div id="pp-button"></div>
+        <div id="payment-response" class="payment-response"></div>
+      </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+    <script src="https://cdn.payphonetodoesposible.com/box/v1.1/payphone-payment-box.js"></script>
+
+    <script>
+      // Escuchar clic en botón de "Pagar Todo"
+      document.addEventListener("DOMContentLoaded", () => {
+        // Esta parte se asegura que tu botón de pagar funcione incluso si script.js no se carga correctamente
+        document.getElementById("pay-button").addEventListener("click", () => {
+          const items = document.querySelectorAll("#cart li");
+          if (items.length === 0) {
+            const msg = document.getElementById("payment-response");
+            msg.textContent =
+              "El carrito está vacío. Agrega productos antes de pagar.";
+            msg.style.display = "block";
+            msg.className = "payment-response info";
+            setTimeout(() => {
+              msg.style.display = "none";
+            }, 4000);
+            return;
+          }
+
+          let total = 0;
+          items.forEach((item) => {
+            const priceText = item.textContent.split("$")[1];
+            total += parseFloat(priceText);
+          });
+
+          if (typeof initPaymentBox === "function") {
+            initPaymentBox(total);
+          } else {
+            console.error("initPaymentBox no está disponible.");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -6,7 +6,7 @@ describe('Tienda Catalogo de Productos - Funcionalidades del DOM', () => {
   let document;
 
   beforeAll(() => {
-    const html = fs.readFileSync(path.resolve(__dirname, '../public/index.html'), 'utf8');
+    const html = fs.readFileSync(path.resolve(__dirname, '../index.html'), 'utf8');
     const dom = new JSDOM(html);
     document = dom.window.document;
   });

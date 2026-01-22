@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmación de Pago</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    :root {
+      --color-primary: #008cba;
+      --color-success: #28a745;
+      --color-warning: #ff9800;
+      --color-light: #f4f4f4;
+      --color-white: #ffffff;
+      --color-shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef1f5;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: var(--color-primary);
+      color: var(--color-white);
+      text-align: center;
+      padding: 1.5rem 0;
+    }
+
+    main {
+      padding: 2rem 1rem;
+    }
+
+    .confirmation-container {
+      background: var(--color-white);
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px var(--color-shadow);
+    }
+
+    h2 {
+      color: var(--color-primary);
+    }
+
+    .transaction-details {
+      background: var(--color-light);
+      padding: 1.2rem;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+    }
+
+    .status {
+      font-weight: bold;
+    }
+
+    .status-approved {
+      color: var(--color-success);
+    }
+
+    .status-warning {
+      color: var(--color-warning);
+    }
+
+    .return-button {
+      display: inline-block;
+      background: var(--color-primary);
+      color: var(--color-white);
+      padding: 0.8rem 1.5rem;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: background 0.3s ease;
+    }
+
+    .return-button:hover {
+      background: #006c97;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 0;
+      font-size: 0.9rem;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>¡Pago Confirmado!</h1>
+  </header>
+
+  <main>
+    <section class="confirmation-container" aria-labelledby="confirmacion-titulo">
+      <h2 id="confirmacion-titulo">Gracias por tu compra</h2>
+      <p>Tu transacción ha sido procesada exitosamente.</p>
+
+      <div class="transaction-details" aria-label="Detalles de la transacción">
+        <h3>Detalles de la transacción</h3>
+        <p><strong>Estado del Pago:</strong> <span id="payment-status" class="status status-approved">Cargando...</span></p>
+        <p><strong>ID de Transacción Cliente:</strong> <span id="client-transaction-id">Cargando...</span></p>
+        <p><strong>ID de Transacción PayPhone:</strong> <span id="transaction-id">Cargando...</span></p>
+      </div>
+
+      <a href="index.html" class="return-button">Volver a la tienda</a>
+    </section>
+  </main>
+
+  <footer>
+    © 2025 TuTienda. Todos los derechos reservados.
+  </footer>
+
+  <script>
+    (function () {
+      const urlParams = new URLSearchParams(window.location.search);
+
+      const clientTransactionId = urlParams.get('clientTransactionId') || 'No disponible';
+      const transactionId = urlParams.get('transactionId') || urlParams.get('id') || 'No disponible';
+      const transactionStatus = urlParams.get('transactionStatus') || 'Aprobado';
+
+      const savedId = localStorage.getItem('lastTransactionId');
+      const appResponse = localStorage.getItem('payPhoneAppResponse');
+
+      // Actualizar contenido en pantalla
+      document.getElementById('client-transaction-id').textContent = clientTransactionId;
+      document.getElementById('transaction-id').textContent = transactionId;
+
+      const statusElement = document.getElementById('payment-status');
+      statusElement.textContent = transactionStatus;
+
+      // Aplicar estilo de acuerdo al estado
+      if (['Approved', 'Completado', 'Success', 'Aprobado'].includes(transactionStatus)) {
+        statusElement.className = 'status status-approved';
+      } else {
+        statusElement.className = 'status status-warning';
+      }
+
+      // Verificación del ID con localStorage
+      if (clientTransactionId && savedId && clientTransactionId === savedId) {
+        console.log('✅ Transacción verificada correctamente.');
+      } else {
+        console.warn('⚠️ El ID de transacción no coincide con el guardado previamente.');
+      }
+
+      // Verificar si hay respuesta de la aplicación móvil
+      if (appResponse) {
+        try {
+          const response = JSON.parse(appResponse);
+          console.log('📱 Respuesta de la aplicación móvil:', response);
+          
+          // Limpiar después de usar
+          localStorage.removeItem('payPhoneAppResponse');
+        } catch (e) {
+          console.error('Error al procesar la respuesta de la aplicación:', e);
+        }
+      }
+    })();
+  </script>
+</body>
+</html>
