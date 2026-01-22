@@ -1,0 +1,68 @@
+pipeline {
+    agent any
+
+    // Trigger para Azure DevOps
+    triggers {
+        GenericTrigger(
+            token: '11f0e291e453daaaed2a92513592e0fcb7'
+        )
+    }
+
+    tools {
+        nodejs "NodeJS 24"
+        dockerTool 'Docker' // Declaración de la herramienta Docker
+    }
+
+    environment {
+        IMAGE_NAME = "hola-mundo-mocha"
+        CONTAINER_NAME = "hola-mundo-mocha"
+        PORT = "3006"
+    }
+
+    stages {
+        stage('Instalar Dependencias') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Ejecutar Pruebas Unitarias con Mocha') {
+            steps {
+                sh 'npm install'
+                sh 'chmod +x ./node_modules/.bin/mocha'
+                sh './node_modules/.bin/mocha'
+            }
+        }
+
+        stage('Construir Imagen Docker para pruebas') {
+            when {
+                expression { currentBuild.result == null || currentBuild.result == 'SUCCESS' }
+            }
+            steps {
+                sh 'docker build -t $IMAGE_NAME:latest .'
+            }
+        }
+
+        stage('Ejecutar Contenedor Node.js con Mocha') {
+            when {
+                expression { currentBuild.result == null || currentBuild.result == 'SUCCESS' }
+            }
+            steps {
+                sh '''
+                docker stop $CONTAINER_NAME || true
+                docker rm $CONTAINER_NAME || true
+                docker run -d --name $CONTAINER_NAME -p $PORT:3000 $IMAGE_NAME:latest
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Despliegue completado y contenedor en puerto $PORT"
+        }
+        failure {
+            echo "Error en el pipeline. Revisa los logs."
+        }
+    }
+}

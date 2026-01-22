@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Pago Confirmado</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="confirm-container">
+
+
+    <div class="confirm-card">
+        <h1>¡Pago Confirmado!✅</h1>
+      <h3>Gracias por tu compra</h3>
+      <p>Tu transacción ha sido procesada exitosamente.</p>
+
+      <div class="confirm-details">
+        <p><strong>Estado del pago:</strong> Aprobado</p>
+        <p><strong>ID Transacción Cliente:</strong> <span id="clientTx"></span></p>
+        <p><strong>ID Transacción Payphone:</strong> <span id="payphoneTx"></span></p>
+      </div>
+
+      <button onclick="volver()">Volver a la tienda</button>
+    </div>
+  </div>
+
+  <script>
+    // Se obtienen los parámetros enviados por la URL
+    const params = new URLSearchParams(window.location.search);
+    
+     // Se coloca el clientTransactionId recibido en el HTML
+    document.getElementById("clientTx").textContent =
+      params.get("clientTransactionId") || "No disponible";
+    
+      // Se coloca el id de PayPhone recibido en el HTML
+    document.getElementById("payphoneTx").textContent =
+      params.get("id") || "No disponible";
+
+
+    // Función que permite volver a la página principal
+    function volver() {
+      window.location.href = "index.html";
+    }
+  </script>
+
+</body>
+</html>
